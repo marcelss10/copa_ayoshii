@@ -562,55 +562,52 @@ sorted.forEach(date=>{
 // ══════════════════════════════════════════════════════════════════
 
 function workerSVG(){
-  // Pedreiro estilizado: chapéu branco, camiseta azul A.YOSHII, tijolo na mão
-  return `<svg width="100" height="140" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
-    <!-- Pernas -->
-    <rect x="33" y="100" width="14" height="32" rx="4" fill="#1A3F6F"/>
-    <rect x="53" y="100" width="14" height="32" rx="4" fill="#1A3F6F"/>
-    <!-- Sapatos -->
-    <rect x="29" y="126" width="20" height="10" rx="4" fill="#2c1810"/>
-    <rect x="51" y="126" width="20" height="10" rx="4" fill="#2c1810"/>
-    <!-- Corpo / Camiseta azul A.YOSHII -->
-    <rect x="25" y="62" width="50" height="44" rx="8" fill="#1E5AA8"/>
-    <!-- Texto A.YOSHII na camiseta -->
-    <text x="50" y="80" font-family="Arial,sans-serif" font-weight="900" font-size="8.5" fill="white" text-anchor="middle" letter-spacing="0.5">A.YOSHII</text>
-    <!-- Faixa laranja na camiseta -->
-    <rect x="25" y="84" width="50" height="7" fill="#F26522" opacity="0.85"/>
-    <!-- Braço esquerdo (normal) -->
-    <rect x="10" y="64" width="15" height="10" rx="5" fill="#F4A261" transform="rotate(-20,10,64)"/>
-    <!-- Braço direito (segurando tijolo, levantado) -->
-    <rect x="75" y="54" width="15" height="10" rx="5" fill="#F4A261" transform="rotate(20,75,54)"/>
-    <!-- Mão direita -->
-    <ellipse cx="88" cy="52" rx="7" ry="5" fill="#F4A261"/>
-    <!-- TIJOLO na mão direita -->
-    <rect x="82" y="38" width="24" height="12" rx="2" fill="#C1440E"/>
-    <rect x="82" y="38" width="24" height="5" rx="2" fill="#D4500F"/>
-    <line x1="94" y1="38" x2="94" y2="50" stroke="#A0380C" stroke-width="1.5"/>
-    <line x1="82" y1="44" x2="106" y2="44" stroke="#A0380C" stroke-width="1"/>
-    <!-- Pescoço -->
-    <rect x="42" y="52" width="16" height="12" rx="4" fill="#F4A261"/>
-    <!-- Cabeça -->
-    <ellipse cx="50" cy="42" rx="20" ry="18" fill="#F4A261"/>
-    <!-- Olhos -->
-    <ellipse cx="43" cy="40" rx="3" ry="3.5" fill="white"/>
-    <ellipse cx="57" cy="40" rx="3" ry="3.5" fill="white"/>
-    <circle cx="44" cy="40.5" r="1.8" fill="#1A3F6F"/>
-    <circle cx="58" cy="40.5" r="1.8" fill="#1A3F6F"/>
-    <!-- Sorriso -->
-    <path d="M43 49 Q50 55 57 49" stroke="#7a3a1a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <!-- Bigode sutil -->
-    <path d="M45 47 Q50 50 55 47" stroke="#7a3a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
-    <!-- ═══ CHAPÉU DE OBRA BRANCO ═══ -->
-    <!-- Aba do chapéu -->
-    <ellipse cx="50" cy="25" rx="27" ry="5" fill="white"/>
-    <ellipse cx="50" cy="25" rx="27" ry="5" fill="none" stroke="#ccc" stroke-width="1"/>
-    <!-- Copa do capacete -->
-    <path d="M26 25 Q26 8 50 6 Q74 8 74 25 Z" fill="white"/>
-    <path d="M26 25 Q26 8 50 6 Q74 8 74 25 Z" fill="none" stroke="#ccc" stroke-width="1"/>
-    <!-- Faixa laranja no capacete -->
-    <path d="M29 22 Q50 18 71 22" stroke="#F26522" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-    <!-- Botão do topo do capacete -->
-    <ellipse cx="50" cy="7" rx="5" ry="3" fill="#e0e0e0"/>
+  // Pedreiro estilizado e moderno: formas fluidas, farda A.YOSHII realista e acabamento profissional
+  return `<svg width="110" height="150" viewBox="0 0 110 150" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="38" cy="142" rx="12" ry="3" fill="#000" opacity="0.1"/>
+    <ellipse cx="62" cy="142" rx="12" ry="3" fill="#000" opacity="0.1"/>
+
+    <path d="M 32,102 L 46,102 L 44,140 L 30,140 Z" fill="#1A3F6F"/>
+    <path d="M 52,102 L 66,102 L 68,140 L 54,140 Z" fill="#1A3F6F"/>
+    
+    <path d="M 28,136 Q 26,144 44,144 L 44,136 Z" fill="#2c1810"/>
+    <path d="M 54,136 L 54,144 Q 72,144 70,136 Z" fill="#2c1810"/>
+
+    <path d="M 24,66 Q 10,72 16,88 Q 22,90 28,76 Z" fill="#1E5AA8"/> <path d="M 16,84 Q 12,96 18,102 Q 24,96 20,86 Z" fill="#F4A261"/> <path d="M 22,64 L 76,64 L 68,105 L 30,105 Z" fill="#1E5AA8"/>
+    
+    <path d="M 42,64 L 50,74 L 56,64 Z" fill="#F4A261"/>
+    
+    <text x="49" y="83" font-family="'Montserrat', 'Arial Black', sans-serif" font-weight="900" font-size="7.5" fill="white" text-anchor="middle" letter-spacing="0.2">A.YOSHII</text>
+    
+    <path d="M 25,88 Q 49,94 73,88 L 71,95 Q 49,101 27,95 Z" fill="#F26522"/>
+
+    <path d="M 74,66 Q 88,62 88,48 Q 80,46 74,58 Z" fill="#1E5AA8"/> <path d="M 84,50 Q 94,40 88,34 Q 80,42 82,48 Z" fill="#F4A261"/> <g transform="translate(76, 20) rotate(5)">
+      <rect x="0" y="2" width="22" height="11" rx="1.5" fill="#C1440E"/>
+      <rect x="0" y="0" width="22" height="4" rx="1.5" fill="#D4500F"/>
+      <line x1="11" y1="0" x2="11" y2="13" stroke="#A0380C" stroke-width="1"/>
+      <line x1="0" y1="6" x2="22" y2="6" stroke="#A0380C" stroke-width="0.8"/>
+    </g>
+
+    <path d="M 43,54 L 55,54 L 54,64 L 44,64 Z" fill="#F4A261"/>
+    <path d="M 43,60 Q 49,64 55,60" stroke="#d48248" stroke-width="1" fill="none"/> <ellipse cx="49" cy="44" rx="18" ry="17" fill="#F4A261"/>
+
+    <circle cx="42" cy="42" r="3.5" fill="white"/>
+    <circle cx="56" cy="42" r="3.5" fill="white"/>
+    <circle cx="43" cy="42" r="1.8" fill="#1A3F6F"/>
+    <circle cx="55" cy="42" r="1.8" fill="#1A3F6F"/>
+    <circle cx="44" cy="41" r="0.6" fill="white"/> <circle cx="56" cy="41" r="0.6" fill="white"/> <path d="M 41,49 Q 49,56 57,49" stroke="#7a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    
+    <circle cx="36" cy="47" r="2" fill="#E76F51" opacity="0.3"/>
+    <circle cx="62" cy="47" r="2" fill="#E76F51" opacity="0.3"/>
+
+    <path d="M 23,28 Q 49,34 75,28 Q 78,25 73,24 Q 49,27 25,24 Q 20,25 23,28 Z" fill="#f0f0f0"/>
+    <path d="M 25,25 Q 49,29 73,25" stroke="#dcdcdc" stroke-width="1" fill="none"/>
+    
+    <path d="M 27,24 C 25,5 73,5 71,24 Z" fill="white"/>
+    
+    <path d="M 31,21 Q 49,17 67,21" stroke="#F26522" stroke-width="3" fill="none"/>
+    
+    <path d="M 46,6 Q 49,4 52,6 L 51,21 Q 49,21 47,21 Z" fill="#e8e8e8"/>
   </svg>`;
 }
 
