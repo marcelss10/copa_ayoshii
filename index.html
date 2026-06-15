@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copa do Mundo 2026 — A.YOSHII ENGENHARIA</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul:    #1A3F6F;
+    --azul2:   #1E5AA8;
+    --laranja: #F26522;
+    --laranja2:#FF8C42;
+    --verde-br:#009C3B;
+    --amarelo-br:#FFDF00;
+    --bg:      #0A1628;
+    --bg2:     #0F2040;
+    --card:    #132A52;
+    --txt:     #EDF2F8;
+    --muted:   #7A9ABE;
+    --border:  rgba(255,255,255,0.07);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; padding-bottom: 56px; }
+
+  /* ── FAIXA BRASIL no topo ── */
+  .brazil-stripe {
+    height: 5px;
+    background: linear-gradient(90deg, var(--verde-br) 0%, var(--verde-br) 40%, var(--amarelo-br) 40%, var(--amarelo-br) 60%, var(--azul2) 60%, var(--azul2) 100%);
+  }
+
+  header {
+    background: var(--bg2);
+    border-bottom: 3px solid var(--laranja);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-img { height: 48px; width: auto; display: block; border-radius: 6px; }
+  .logo-block {
+    background: var(--azul);
+    border: 2px solid var(--laranja);
+    border-radius: 6px;
+    padding: 6px 13px;
+    line-height: 1.2;
+    text-align: center;
+  }
+  .logo-main  { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 18px; color: var(--laranja); letter-spacing: 0.06em; }
+  .logo-sub   { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 9px; letter-spacing: 0.09em; color: rgba(255,255,255,0.75); white-space: nowrap; }
+  .header-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 26px; letter-spacing: 0.03em; line-height: 1.1; }
+  .header-title em { color: var(--laranja); font-style: normal; }
+  .header-sub { font-size: 12px; color: var(--muted); margin-top: 3px; letter-spacing: 0.04em; }
+
+  .notif-bar {
+    background: rgba(242,101,34,0.12);
+    border-bottom: 1px solid rgba(242,101,34,0.3);
+    padding: 9px 32px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    font-size: 13px; color: #FFAB78;
+  }
+  .notif-bar.hidden { display: none; }
+  .notif-bar strong { font-weight: 700; }
+  .btn-notif {
+    background: var(--laranja); color: #fff; border: none; border-radius: 5px;
+    padding: 6px 16px; font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; white-space: nowrap; transition: opacity .15s;
+  }
+  .btn-notif:hover { opacity: 0.85; }
+
+  .legend { display: flex; gap: 20px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .leg { display: flex; align-items: center; gap: 7px; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .leg-dot.com { background: var(--laranja); }
+  .leg-dot.out { background: var(--muted); opacity: 0.5; }
+
+  .tabs-wrap { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 28px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .tabs-wrap::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: none; border: none; border-bottom: 3px solid transparent;
+    color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 13px 16px 10px; cursor: pointer; white-space: nowrap;
+    transition: color .15s, border-color .15s; position: relative;
+  }
+  .tab-btn:hover { color: var(--txt); }
+  .tab-btn.active { color: var(--laranja); border-bottom-color: var(--laranja); }
+  .tab-btn.has-com::after { content: ''; position: absolute; top: 9px; right: 8px; width: 5px; height: 5px; background: var(--laranja); border-radius: 50%; }
+  .tab-btn.hoje { color: #FFAB78; }
+  .tab-btn.hoje.active { color: var(--laranja); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .day-section { display: none; }
+  .day-section.active { display: block; }
+
+  .day-hdr { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
+  .day-title { font-family: 'Barlow Condensed', sans-serif; font-size: 42px; font-weight: 900; line-height: 1; }
+  .day-title .dnum { color: var(--laranja); font-size: 60px; margin-right: 6px; }
+  .day-round { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--azul2); margin-top: 5px; }
+  .day-com-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(242,101,34,0.1); border: 1px solid rgba(242,101,34,0.3); border-radius: 24px; padding: 5px 14px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; color: var(--laranja); letter-spacing: 0.05em; margin-bottom: 4px; }
+
+  .games-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .game-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 6px solid transparent;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 80px 1fr 170px;
+    align-items: center;
+    gap: 16px;
+    transition: transform .12s;
+  }
+  .game-card:hover { transform: translateX(4px); }
+  .game-card.com { border-left-color: var(--laranja); background: linear-gradient(100deg, rgba(242,101,34,0.06) 0%, var(--card) 45%); }
+  .game-card.out { border-left-color: rgba(255,255,255,0.13); opacity: 0.52; }
+  .game-card.live { border-left-color: #FF4040 !important; background: linear-gradient(100deg, rgba(255,64,64,0.08) 0%, var(--card) 50%) !important; opacity: 1 !important; animation: pulse 2s ease-in-out infinite; }
+
+  @keyframes pulse {
+    0%,100%{box-shadow:0 0 0 0 rgba(255,64,64,0.25)}
+    50%{box-shadow:0 0 0 8px rgba(255,64,64,0)}
+  }
+
+  .col-time { text-align: center; }
+  .time-big { font-family: 'Barlow Condensed', sans-serif; font-size: 34px; font-weight: 900; line-height: 1; }
+  .game-card.com  .time-big { color: var(--laranja); }
+  .game-card.out  .time-big { color: var(--muted); }
+  .game-card.live .time-big { color: #FF7777; }
+  .time-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+  .match-teams { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .team { display: inline-flex; align-items: center; gap: 6px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: 0.02em; line-height: 1; }
+  .team.brasil { color: var(--verde-br); }
+  .flag { display: inline-block; width: 28px; height: 19px; border-radius: 3px; object-fit: cover; vertical-align: middle; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+  .vs-sep { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); padding: 0 2px; flex-shrink: 0; }
+  .match-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .meta-grp { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(255,255,255,0.06); border-radius: 4px; padding: 2px 7px; color: var(--muted); }
+  .meta-city { font-size: 12px; color: var(--muted); }
+  .btn-watch { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; background: rgba(255,0,0,0.13); border: 1px solid rgba(255,60,60,0.35); color: #FF7777; border-radius: 5px; padding: 5px 10px; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background .15s, border-color .15s, color .15s; }
+  .btn-watch:hover { background: rgba(255,0,0,0.25); border-color: rgba(255,60,60,0.7); color: #fff; }
+  .btn-watch svg { flex-shrink: 0; }
+
+  .col-cd { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+  .badge-com { display: inline-block; background: var(--laranja); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+  .badge-live { display: inline-flex; align-items: center; gap: 5px; background: #FF4040; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; animation: blink 1.1s steps(1) infinite; }
+  .live-dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .cd-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 100px; }
+  .cd-num { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; line-height: 1; letter-spacing: 0.02em; }
+  .cd-num.far    { color: var(--txt); }
+  .cd-num.soon   { color: var(--laranja2); }
+  .cd-num.urgent { color: #FF9944; }
+  .cd-num.done   { color: var(--muted); font-size: 13px; }
+  .cd-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+  footer {
+    text-align: center; padding: 22px; font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--border); line-height: 2;
+  }
+  footer .dev { font-size: 11px; color: rgba(122,143,168,0.5); }
+
+  /* ── TICKER ── */
+  #results-ticker {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 48px; background: var(--bg); border-top: 2px solid var(--laranja);
+    z-index: 200; display: flex; align-items: center; overflow: hidden;
+  }
+  #results-ticker .ticker-label {
+    flex-shrink: 0; background: var(--laranja); color: #fff;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px;
+    letter-spacing: 0.1em; text-transform: uppercase; padding: 0 16px; height: 100%;
+    display: flex; align-items: center; white-space: nowrap;
+  }
+  #results-ticker .ticker-track { flex: 1; overflow: hidden; height: 100%; }
+  #results-ticker .ticker-inner {
+    display: flex; align-items: center; height: 100%; white-space: nowrap;
+    animation: ticker-scroll 120s linear infinite; will-change: transform;
+  }
+  #results-ticker .ticker-inner:hover { animation-play-state: paused; }
+  @keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .ticker-item {
+    display: inline-flex; align-items: center; gap: 8px; padding: 0 28px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700;
+    letter-spacing: 0.04em; color: var(--txt); border-right: 1px solid rgba(255,255,255,0.1);
+  }
+  .ticker-item .t-score { font-size: 18px; font-weight: 900; color: var(--laranja); letter-spacing: 0.08em; }
+  .ticker-item .t-date  { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.06em; }
+  .ticker-item .t-group { font-size: 10px; color: var(--laranja2); font-weight: 800; letter-spacing: 0.1em; background: rgba(242,101,34,0.15); padding: 1px 5px; border-radius: 3px; }
+  #results-ticker.hidden { display: none; }
+
+  /* ── STAGE MASCOTE ── */
+  #worker-stage {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 9999; overflow: hidden;
+  }
+  .worker-wrap {
+    position: absolute; display: flex; flex-direction: column;
+    align-items: center; pointer-events: none; gap: 0;
+  }
+  .worker-stolen {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 18px; color: #fff;
+    background: var(--laranja);
+    padding: 4px 14px; border-radius: 6px 6px 0 0;
+    white-space: nowrap; opacity: 0; transition: opacity 0.25s;
+    letter-spacing: 0.08em; position: relative; bottom: -2px; z-index: 2;
+  }
+
+  /* ── TIJOLOS que ele larga pelo caminho ── */
+  .dropped-brick {
+    position: absolute;
+    pointer-events: none;
+    animation: brick-drop 0.9s ease-out forwards;
+    z-index: 9997;
+    user-select: none;
+  }
+  @keyframes brick-drop {
+    0%   { transform: scale(0.3) rotate(-20deg) translateY(-8px); opacity: 1; }
+    35%  { transform: scale(1.15) rotate(8deg)  translateY(0px);  opacity: 1; }
+    65%  { transform: scale(1)    rotate(-4deg) translateY(2px);  opacity: 1; }
+    100% { transform: scale(0.8)  rotate(6deg)  translateY(10px); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="brazil-stripe"></div>
+<div id="worker-stage"></div>
+
+<header>
+ <div class="header-left">
+  <div id="logoWrap">
+   <div class="logo-block" id="logoFallback">
+    <span class="logo-main">A.YOSHII</span>
+    <span class="logo-sub">ENGENHARIA</span>
+   </div>
+  </div>
+  <div>
+    <div class="header-title">COPA DO MUNDO 2026 <em>— CALENDÁRIO</em></div>
+    <div class="header-sub">Horário de Brasília · Fase de Grupos · 11 jun – 27 jun</div>
+  </div>
+ </div>
+ <div class="legend">
+  <div class="leg"><div class="leg-dot com"></div> Horário comercial</div>
+  <div class="leg"><div class="leg-dot out"></div> Fora do comercial</div>
+ </div>
+</header>
+
+<div class="notif-bar hidden" id="notifBar">
+  <span>🔔 <strong>Ative as notificações</strong> para abrir automaticamente os jogos do horário comercial no horário exato.</span>
+  <button class="btn-notif" id="btnNotif">Ativar notificações</button>
+</div>
+
+<div class="tabs-wrap" id="tabsBar"></div>
+<main id="mainContent"></main>
+
+<div id="results-ticker" class="hidden">
+  <div class="ticker-label">⚽ Resultados</div>
+  <div class="ticker-track">
+    <div class="ticker-inner" id="tickerInner"></div>
+  </div>
+</div>
+
+<footer>
+  Horário comercial: <strong>09h às 18h</strong> (horário de Brasília) · Fase de Grupos · Copa do Mundo FIFA 2026
+  <div class="dev">A.Yoshii Engenharia · Desenvolvido por Marcel Ambrosio</div>
+</footer>
+
+<script>
+// ─── LOGO ─────────────────────────────────────────────────────────────────────
+(function() {
+  const extensions = ['png','jpg','jpeg','svg','webp'];
+  let tried = 0;
+  function tryNext() {
+    if (tried >= extensions.length) return;
+    const img = new Image();
+    img.src = './logo.' + extensions[tried++];
+    img.className = 'logo-img';
+    img.alt = 'A.Yoshii Engenharia';
+    img.onload = () => document.getElementById('logoFallback').replaceWith(img);
+    img.onerror = tryNext;
+  }
+  tryNext();
+})();
+
+// ─── DADOS ────────────────────────────────────────────────────────────────────
+const teams = {
+  'México':'mx','África do Sul':'za','Coreia do Sul':'kr','República Tcheca':'cz',
+  'Canadá':'ca','Bósnia e Herzegovina':'ba','Catar':'qa','Suíça':'ch',
+  'Brasil':'br','Marrocos':'ma','Haiti':'ht','Escócia':'gb-sct',
+  'Estados Unidos':'us','Paraguai':'py','Austrália':'au','Turquia':'tr',
+  'Alemanha':'de','Curaçao':'cw','Costa do Marfim':'ci','Equador':'ec',
+  'Holanda':'nl','Japão':'jp','Suécia':'se','Tunísia':'tn',
+  'Bélgica':'be','Egito':'eg','Irã':'ir','Nova Zelândia':'nz',
+  'Espanha':'es','Cabo Verde':'cv','Arábia Saudita':'sa','Uruguai':'uy',
+  'França':'fr','Senegal':'sn','Iraque':'iq','Noruega':'no',
+  'Argentina':'ar','Argélia':'dz','Áustria':'at','Jordânia':'jo',
+  'Portugal':'pt','RD Congo':'cd','Uzbequistão':'uz','Colômbia':'co',
+  'Inglaterra':'gb-eng','Croácia':'hr','Gana':'gh','Panamá':'pa',
+};
+const flagUrl = code => `https://flagcdn.com/w40/${code}.png`;
+const isComercial = h => h >= 9 && h < 18;
+const isBrasil    = n => n === 'Brasil';
+
+const gameLinks = {
+  'Canadá vs Bósnia e Herzegovina':  'https://www.youtube.com/watch?v=CRtjePKnGvA',
+  'Espanha vs Cabo Verde':           'https://www.youtube.com/watch?v=EYStZQ5FsVk',
+  'Bélgica vs Egito':                'https://www.youtube.com/watch?v=aclBHrhLQr4',
+  'França vs Senegal':               'https://www.youtube.com/watch?v=m1vplAfSs_A',
+  'Portugal vs RD Congo':            'https://www.youtube.com/watch?v=HpzKFDctbNw',
+};
+const gameKey = g => `${g.t1} vs ${g.t2}`;
+
+const games = [
+  {date:'2026-06-11',h:16,min:0,label:'16h',t1:'México',t2:'África do Sul',city:'Cidade do México',group:'A',round:1},
+  {date:'2026-06-11',h:23,min:0,label:'23h',t1:'Coreia do Sul',t2:'República Tcheca',city:'Guadalajara',group:'A',round:1},
+  {date:'2026-06-12',h:16,min:0,label:'16h',t1:'Canadá',t2:'Bósnia e Herzegovina',city:'Toronto',group:'B',round:1},
+  {date:'2026-06-12',h:22,min:0,label:'22h',t1:'Estados Unidos',t2:'Paraguai',city:'Los Angeles',group:'D',round:1},
+  {date:'2026-06-13',h:1,min:0,label:'01h',t1:'Austrália',t2:'Turquia',city:'Vancouver',group:'D',round:1},
+  {date:'2026-06-13',h:16,min:0,label:'16h',t1:'Catar',t2:'Suíça',city:'San Francisco',group:'B',round:1},
+  {date:'2026-06-13',h:19,min:0,label:'19h',t1:'Brasil',t2:'Marrocos',city:'Nova York/NJ',group:'C',round:1},
+  {date:'2026-06-13',h:22,min:0,label:'22h',t1:'Haiti',t2:'Escócia',city:'Boston',group:'C',round:1},
+  {date:'2026-06-14',h:14,min:0,label:'14h',t1:'Alemanha',t2:'Curaçao',city:'Houston',group:'E',round:1},
+  {date:'2026-06-14',h:17,min:0,label:'17h',t1:'Holanda',t2:'Japão',city:'Dallas',group:'F',round:1},
+  {date:'2026-06-14',h:20,min:0,label:'20h',t1:'Costa do Marfim',t2:'Equador',city:'Filadélfia',group:'E',round:1},
+  {date:'2026-06-14',h:23,min:0,label:'23h',t1:'Suécia',t2:'Tunísia',city:'Monterrey',group:'F',round:1},
+  {date:'2026-06-15',h:13,min:0,label:'13h',t1:'Espanha',t2:'Cabo Verde',city:'Atlanta',group:'H',round:1},
+  {date:'2026-06-15',h:16,min:0,label:'16h',t1:'Bélgica',t2:'Egito',city:'Seattle',group:'G',round:1},
+  {date:'2026-06-15',h:19,min:0,label:'19h',t1:'Arábia Saudita',t2:'Uruguai',city:'Miami',group:'H',round:1},
+  {date:'2026-06-15',h:22,min:0,label:'22h',t1:'Irã',t2:'Nova Zelândia',city:'Los Angeles',group:'G',round:1},
+  {date:'2026-06-16',h:14,min:0,label:'14h',t1:'Argentina',t2:'Argélia',city:'Kansas City',group:'J',round:1},
+  {date:'2026-06-16',h:16,min:0,label:'16h',t1:'França',t2:'Senegal',city:'Nova York/NJ',group:'I',round:1},
+  {date:'2026-06-16',h:19,min:0,label:'19h',t1:'Iraque',t2:'Noruega',city:'Boston',group:'I',round:1},
+  {date:'2026-06-17',h:1,min:0,label:'01h',t1:'Áustria',t2:'Jordânia',city:'San Francisco',group:'J',round:1},
+  {date:'2026-06-17',h:14,min:0,label:'14h',t1:'Portugal',t2:'RD Congo',city:'Houston',group:'K',round:1},
+  {date:'2026-06-17',h:17,min:0,label:'17h',t1:'Inglaterra',t2:'Croácia',city:'Dallas',group:'L',round:1},
+  {date:'2026-06-17',h:20,min:0,label:'20h',t1:'Gana',t2:'Panamá',city:'Toronto',group:'L',round:1},
+  {date:'2026-06-17',h:23,min:0,label:'23h',t1:'Uzbequistão',t2:'Colômbia',city:'Cidade do México',group:'K',round:1},
+  {date:'2026-06-18',h:13,min:0,label:'13h',t1:'República Tcheca',t2:'África do Sul',city:'Atlanta',group:'A',round:2},
+  {date:'2026-06-18',h:16,min:0,label:'16h',t1:'Suíça',t2:'Bósnia e Herzegovina',city:'Los Angeles',group:'B',round:2},
+  {date:'2026-06-18',h:19,min:0,label:'19h',t1:'Canadá',t2:'Catar',city:'Vancouver',group:'B',round:2},
+  {date:'2026-06-18',h:22,min:0,label:'22h',t1:'México',t2:'Coreia do Sul',city:'Guadalajara',group:'A',round:2},
+  {date:'2026-06-19',h:1,min:0,label:'01h',t1:'Turquia',t2:'Paraguai',city:'San Francisco',group:'D',round:2},
+  {date:'2026-06-19',h:16,min:0,label:'16h',t1:'Estados Unidos',t2:'Austrália',city:'Seattle',group:'D',round:2},
+  {date:'2026-06-19',h:19,min:0,label:'19h',t1:'Escócia',t2:'Marrocos',city:'Boston',group:'C',round:2},
+  {date:'2026-06-19',h:22,min:0,label:'22h',t1:'Brasil',t2:'Haiti',city:'Filadélfia',group:'C',round:2},
+  {date:'2026-06-20',h:14,min:0,label:'14h',t1:'Holanda',t2:'Suécia',city:'Houston',group:'F',round:2},
+  {date:'2026-06-20',h:17,min:0,label:'17h',t1:'Alemanha',t2:'Costa do Marfim',city:'Toronto',group:'E',round:2},
+  {date:'2026-06-20',h:21,min:0,label:'21h',t1:'Equador',t2:'Curaçao',city:'Kansas City',group:'E',round:2},
+  {date:'2026-06-21',h:1,min:0,label:'01h',t1:'Tunísia',t2:'Japão',city:'Monterrey',group:'F',round:2},
+  {date:'2026-06-21',h:13,min:0,label:'13h',t1:'Espanha',t2:'Arábia Saudita',city:'Atlanta',group:'H',round:2},
+  {date:'2026-06-21',h:16,min:0,label:'16h',t1:'Bélgica',t2:'Irã',city:'Los Angeles',group:'G',round:2},
+  {date:'2026-06-21',h:19,min:0,label:'19h',t1:'Uruguai',t2:'Cabo Verde',city:'Miami',group:'H',round:2},
+  {date:'2026-06-21',h:22,min:0,label:'22h',t1:'Nova Zelândia',t2:'Egito',city:'Vancouver',group:'G',round:2},
+  {date:'2026-06-22',h:14,min:0,label:'14h',t1:'Argentina',t2:'Áustria',city:'Dallas',group:'J',round:2},
+  {date:'2026-06-22',h:18,min:0,label:'18h',t1:'França',t2:'Iraque',city:'Filadélfia',group:'I',round:2},
+  {date:'2026-06-22',h:21,min:0,label:'21h',t1:'Noruega',t2:'Senegal',city:'Nova York/NJ',group:'I',round:2},
+  {date:'2026-06-23',h:0,min:0,label:'00h',t1:'Jordânia',t2:'Argélia',city:'San Francisco',group:'J',round:2},
+  {date:'2026-06-23',h:14,min:0,label:'14h',t1:'Portugal',t2:'Uzbequistão',city:'Houston',group:'K',round:2},
+  {date:'2026-06-23',h:17,min:0,label:'17h',t1:'Inglaterra',t2:'Gana',city:'Boston',group:'L',round:2},
+  {date:'2026-06-23',h:20,min:0,label:'20h',t1:'Panamá',t2:'Croácia',city:'Toronto',group:'L',round:2},
+  {date:'2026-06-23',h:23,min:0,label:'23h',t1:'Colômbia',t2:'RD Congo',city:'Guadalajara',group:'K',round:2},
+  {date:'2026-06-24',h:16,min:0,label:'16h',t1:'Suíça',t2:'Canadá',city:'Vancouver',group:'B',round:3},
+  {date:'2026-06-24',h:16,min:0,label:'16h',t1:'Bósnia e Herzegovina',t2:'Catar',city:'Seattle',group:'B',round:3},
+  {date:'2026-06-24',h:19,min:0,label:'19h',t1:'Escócia',t2:'Brasil',city:'Miami',group:'C',round:3},
+  {date:'2026-06-24',h:19,min:0,label:'19h',t1:'Marrocos',t2:'Haiti',city:'Atlanta',group:'C',round:3},
+  {date:'2026-06-24',h:22,min:0,label:'22h',t1:'República Tcheca',t2:'México',city:'Cidade do México',group:'A',round:3},
+  {date:'2026-06-24',h:22,min:0,label:'22h',t1:'África do Sul',t2:'Coreia do Sul',city:'Monterrey',group:'A',round:3},
+  {date:'2026-06-25',h:17,min:0,label:'17h',t1:'Equador',t2:'Alemanha',city:'Nova York/NJ',group:'E',round:3},
+  {date:'2026-06-25',h:17,min:0,label:'17h',t1:'Curaçao',t2:'Costa do Marfim',city:'Filadélfia',group:'E',round:3},
+  {date:'2026-06-25',h:20,min:0,label:'20h',t1:'Japão',t2:'Suécia',city:'Dallas',group:'F',round:3},
+  {date:'2026-06-25',h:20,min:0,label:'20h',t1:'Tunísia',t2:'Holanda',city:'Kansas City',group:'F',round:3},
+  {date:'2026-06-25',h:23,min:0,label:'23h',t1:'Turquia',t2:'Estados Unidos',city:'Los Angeles',group:'D',round:3},
+  {date:'2026-06-25',h:23,min:0,label:'23h',t1:'Paraguai',t2:'Austrália',city:'San Francisco',group:'D',round:3},
+  {date:'2026-06-26',h:16,min:0,label:'16h',t1:'Noruega',t2:'França',city:'Boston',group:'I',round:3},
+  {date:'2026-06-26',h:16,min:0,label:'16h',t1:'Senegal',t2:'Iraque',city:'Toronto',group:'I',round:3},
+  {date:'2026-06-26',h:21,min:0,label:'21h',t1:'Cabo Verde',t2:'Arábia Saudita',city:'Houston',group:'H',round:3},
+  {date:'2026-06-26',h:21,min:0,label:'21h',t1:'Uruguai',t2:'Espanha',city:'Guadalajara',group:'H',round:3},
+  {date:'2026-06-27',h:0,min:0,label:'00h',t1:'Egito',t2:'Irã',city:'Seattle',group:'G',round:3},
+  {date:'2026-06-27',h:0,min:0,label:'00h',t1:'Nova Zelândia',t2:'Bélgica',city:'Vancouver',group:'G',round:3},
+  {date:'2026-06-27',h:18,min:0,label:'18h',t1:'Panamá',t2:'Inglaterra',city:'Nova York/NJ',group:'L',round:3},
+  {date:'2026-06-27',h:18,min:0,label:'18h',t1:'Croácia',t2:'Gana',city:'Filadélfia',group:'L',round:3},
+  {date:'2026-06-27',h:20,min:30,label:'20:30h',t1:'Colômbia',t2:'Portugal',city:'Miami',group:'K',round:3},
+  {date:'2026-06-27',h:20,min:30,label:'20:30h',t1:'RD Congo',t2:'Uzbequistão',city:'Atlanta',group:'K',round:3},
+  {date:'2026-06-27',h:23,min:0,label:'23h',t1:'Argélia',t2:'Áustria',city:'Kansas City',group:'J',round:3},
+  {date:'2026-06-27',h:23,min:0,label:'23h',t1:'Jordânia',t2:'Argentina',city:'Dallas',group:'J',round:3},
+];
+games.forEach((g,i) => g.id = 'g'+i);
+
+function kickoff(g){
+  const [y,mo,d] = g.date.split('-').map(Number);
+  return new Date(Date.UTC(y, mo-1, d, g.h+3, g.min, 0));
+}
+const GAME_DUR = 115*60*1000;
+const brasiliaToday = () => new Date(Date.now()-3*3600*1000).toISOString().slice(0,10);
+
+function teamHtml(name, isBr){
+  const code = teams[name]||'un';
+  return `<span class="team${isBr?' brasil':''}"><img class="flag" src="${flagUrl(code)}" alt="${name}" loading="lazy" onerror="this.style.display='none'">${name}</span>`;
+}
+
+// ── RESULTADOS ──────────────────────────────────────────────────────────────
+const resultados = {
+  'México vs África do Sul':          '2-0',
+  'Coreia do Sul vs República Tcheca':'2-1',
+  'Canadá vs Bósnia e Herzegovina':   '1-1',
+  'Estados Unidos vs Paraguai':       '4-1',
+  'Austrália vs Turquia':             '2-0',
+  'Catar vs Suíça':                   '1-1',
+  'Brasil vs Marrocos':               '1-1',
+  'Haiti vs Escócia':                 '0-1',
+  'Alemanha vs Curaçao':              '7-1',
+  'Holanda vs Japão':                 '2-2',
+  'Costa do Marfim vs Equador':       '1-0',
+  'Suécia vs Tunísia':                '5-1',
+};
+
+// ── TICKER ──────────────────────────────────────────────────────────────────
+function buildTicker(){
+  const now = Date.now();
+  const tickerEl = document.getElementById('results-ticker');
+  const innerEl  = document.getElementById('tickerInner');
+  const finished = games.filter(g => {
+    const k = kickoff(g).getTime();
+    return k + GAME_DUR < now && resultados[gameKey(g)];
+  });
+  if(!finished.length){ tickerEl.classList.add('hidden'); return; }
+  tickerEl.classList.remove('hidden');
+  const makeItem = g => {
+    const key = gameKey(g);
+    const score = resultados[key];
+    if(!score) return '';
+    const [s1,s2] = score.split('-').map(s=>s.trim());
+    const dateStr = g.date.slice(8)+'/'+g.date.slice(5,7);
+    return `<span class="ticker-item">
+      <span class="t-group">Grp ${g.group}</span>
+      <img class="flag" src="${flagUrl(teams[g.t1]||'un')}" alt="${g.t1}" style="width:24px;height:17px" onerror="this.style.display='none'">
+      ${g.t1}
+      <span class="t-score">${s1} – ${s2}</span>
+      ${g.t2}
+      <img class="flag" src="${flagUrl(teams[g.t2]||'un')}" alt="${g.t2}" style="width:24px;height:17px" onerror="this.style.display='none'">
+      <span class="t-date">${dateStr}</span>
+    </span>`;
+  };
+  let html = '';
+  finished.forEach(g => { html += makeItem(g); });
+  finished.forEach(g => { html += makeItem(g); });
+  innerEl.innerHTML = html;
+  const totalPx = innerEl.scrollWidth/2;
+  innerEl.style.animationDuration = Math.max(40, totalPx/65)+'s';
+}
+
+// ── ABERTURA AUTOMÁTICA ──────────────────────────────────────────────────────
+const firedPreOpen = new Set();
+function schedulePreOpen(){
+  const now = Date.now();
+  games.forEach(g => {
+    const link = gameLinks[gameKey(g)];
+    if(!link) return;
+    const delay = kickoff(g).getTime()-30*60*1000-now;
+    if(delay<0||delay>7*24*3600*1000) return;
+    setTimeout(()=>{
+      if(firedPreOpen.has(g.id)) return;
+      firedPreOpen.add(g.id);
+      const win = window.open(link,'_blank');
+      try{ if(win){ win.moveTo(0,0); win.resizeTo(screen.width,screen.height); } }catch(e){}
+      if(Notification.permission==='granted'){
+        const n = new Notification(`⚽ Em 30min: ${g.t1} vs ${g.t2}`,{body:`Grupo ${g.group} · ${g.city}`,icon:'./logo.png',tag:'pre-'+g.id,requireInteraction:true});
+        n.onclick=()=>{ window.open(link,'_blank'); n.close(); };
+      }
+    }, delay);
+  });
+}
+
+// ── NOTIFICAÇÕES ──────────────────────────────────────────────────────────────
+function initNotifications(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission==='granted'){
+    localStorage.setItem('notificationsEnabled','true');
+    document.getElementById('notifBar').classList.add('hidden');
+    schedulePreOpen();
+  } else if(Notification.permission!=='denied'){
+    if(localStorage.getItem('notificationsEnabled')==='true'){
+      schedulePreOpen();
+      document.getElementById('notifBar').classList.add('hidden');
+    } else {
+      document.getElementById('notifBar').classList.remove('hidden');
+    }
+    document.getElementById('btnNotif').addEventListener('click',()=>{
+      Notification.requestPermission().then(p=>{
+        document.getElementById('notifBar').classList.add('hidden');
+        if(p==='granted'){ localStorage.setItem('notificationsEnabled','true'); schedulePreOpen(); }
+      });
+    });
+  } else {
+    schedulePreOpen();
+  }
+}
+
+// ── BUILD DOM ─────────────────────────────────────────────────────────────────
+const byDate={};
+games.forEach(g=>{ (byDate[g.date]=byDate[g.date]||[]).push(g); });
+const months=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const wdays=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const roundLbl={1:'1ª Rodada',2:'2ª Rodada',3:'3ª Rodada'};
+const dateLbl={'2026-06-11':'Qui 11','2026-06-12':'Sex 12','2026-06-13':'Sáb 13','2026-06-14':'Dom 14','2026-06-15':'Seg 15','2026-06-16':'Ter 16','2026-06-17':'Qua 17','2026-06-18':'Qui 18','2026-06-19':'Sex 19','2026-06-20':'Sáb 20','2026-06-21':'Dom 21','2026-06-22':'Seg 22','2026-06-23':'Ter 23','2026-06-24':'Qua 24','2026-06-25':'Qui 25','2026-06-26':'Sex 26','2026-06-27':'Sáb 27'};
+
+const tabsBar=document.getElementById('tabsBar');
+const mainEl=document.getElementById('mainContent');
+const todayStr=brasiliaToday();
+const sorted=Object.keys(byDate).sort();
+let activeTab=sorted.includes(todayStr)?todayStr:sorted[0];
+
+sorted.forEach(date=>{
+  const dayG=byDate[date];
+  const comCt=dayG.filter(g=>isComercial(g.h)).length;
+  const isToday=date===todayStr;
+  const btn=document.createElement('button');
+  btn.className='tab-btn'+(comCt>0?' has-com':'')+(isToday?' hoje':'');
+  btn.dataset.date=date;
+  btn.textContent=(dateLbl[date]||date.slice(8))+(isToday?' ★':'');
+  if(date===activeTab) btn.classList.add('active');
+  btn.addEventListener('click',()=>switchTab(date));
+  tabsBar.appendChild(btn);
+
+  const sec=document.createElement('div');
+  sec.className='day-section'+(date===activeTab?' active':'');
+  sec.id='section-'+date;
+  const [y,m,d]=date.split('-');
+  const wd=new Date(date+'T12:00:00').getDay();
+  const rounds=[...new Set(dayG.map(g=>g.round))].sort();
+  let html=`<div class="day-hdr"><div><div class="day-title"><span class="dnum">${d}</span>${months[+m]} 2026</div><div class="day-round">${wdays[wd]} · ${rounds.map(r=>roundLbl[r]).join(' & ')}</div></div>${comCt>0?`<div class="day-com-badge">🏗️ ${comCt} jogo${comCt>1?'s':''} no horário comercial</div>`:''}</div><div class="games-list">`;
+  dayG.forEach(g=>{
+    const com=isComercial(g.h), b1=isBrasil(g.t1), b2=isBrasil(g.t2);
+    const link=gameLinks[gameKey(g)];
+    const watchBtn=link?`<a class="btn-watch" href="${link}" target="_blank" rel="noopener"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Assistir</a>`:'';
+    html+=`<div class="game-card ${com?'com':'out'}" id="card-${g.id}">
+      <div class="col-time"><div class="time-big">${g.label}</div><div class="time-lbl">Brasília</div></div>
+      <div class="col-match"><div class="match-teams">${teamHtml(g.t1,b1)}<span class="vs-sep">vs</span>${teamHtml(g.t2,b2)}</div><div class="match-meta"><span class="meta-grp">Grupo ${g.group}</span><span class="meta-city">📍 ${g.city}</span></div>${watchBtn}</div>
+      <div class="col-cd" id="colcd-${g.id}">${com?'<span class="badge-com">Comercial</span>':''}<div class="cd-box"><div class="cd-num far" id="cdnum-${g.id}">--</div><div class="cd-lbl" id="cdlbl-${g.id}">calculando</div></div></div>
+    </div>`;
+  });
+  html+='</div>';
+  sec.innerHTML=html;
+  mainEl.appendChild(sec);
+});
+
+// ══════════════════════════════════════════════════════════════════
+//  MASCOTE — Pedreiro da A.Yoshii em SVG puro
+//  Chapéu branco de obra, camiseta A.YOSHII azul
+//  Carrega um tijolo e vai largando tijolos pelo caminho
+// ══════════════════════════════════════════════════════════════════
+
+function workerSVG(){
+  // Pedreiro estilizado: chapéu branco, camiseta azul A.YOSHII, tijolo na mão
+  return `<svg width="100" height="140" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pernas -->
+    <rect x="33" y="100" width="14" height="32" rx="4" fill="#1A3F6F"/>
+    <rect x="53" y="100" width="14" height="32" rx="4" fill="#1A3F6F"/>
+    <!-- Sapatos -->
+    <rect x="29" y="126" width="20" height="10" rx="4" fill="#2c1810"/>
+    <rect x="51" y="126" width="20" height="10" rx="4" fill="#2c1810"/>
+    <!-- Corpo / Camiseta azul A.YOSHII -->
+    <rect x="25" y="62" width="50" height="44" rx="8" fill="#1E5AA8"/>
+    <!-- Texto A.YOSHII na camiseta -->
+    <text x="50" y="80" font-family="Arial,sans-serif" font-weight="900" font-size="8.5" fill="white" text-anchor="middle" letter-spacing="0.5">A.YOSHII</text>
+    <!-- Faixa laranja na camiseta -->
+    <rect x="25" y="84" width="50" height="7" fill="#F26522" opacity="0.85"/>
+    <!-- Braço esquerdo (normal) -->
+    <rect x="10" y="64" width="15" height="10" rx="5" fill="#F4A261" transform="rotate(-20,10,64)"/>
+    <!-- Braço direito (segurando tijolo, levantado) -->
+    <rect x="75" y="54" width="15" height="10" rx="5" fill="#F4A261" transform="rotate(20,75,54)"/>
+    <!-- Mão direita -->
+    <ellipse cx="88" cy="52" rx="7" ry="5" fill="#F4A261"/>
+    <!-- TIJOLO na mão direita -->
+    <rect x="82" y="38" width="24" height="12" rx="2" fill="#C1440E"/>
+    <rect x="82" y="38" width="24" height="5" rx="2" fill="#D4500F"/>
+    <line x1="94" y1="38" x2="94" y2="50" stroke="#A0380C" stroke-width="1.5"/>
+    <line x1="82" y1="44" x2="106" y2="44" stroke="#A0380C" stroke-width="1"/>
+    <!-- Pescoço -->
+    <rect x="42" y="52" width="16" height="12" rx="4" fill="#F4A261"/>
+    <!-- Cabeça -->
+    <ellipse cx="50" cy="42" rx="20" ry="18" fill="#F4A261"/>
+    <!-- Olhos -->
+    <ellipse cx="43" cy="40" rx="3" ry="3.5" fill="white"/>
+    <ellipse cx="57" cy="40" rx="3" ry="3.5" fill="white"/>
+    <circle cx="44" cy="40.5" r="1.8" fill="#1A3F6F"/>
+    <circle cx="58" cy="40.5" r="1.8" fill="#1A3F6F"/>
+    <!-- Sorriso -->
+    <path d="M43 49 Q50 55 57 49" stroke="#7a3a1a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <!-- Bigode sutil -->
+    <path d="M45 47 Q50 50 55 47" stroke="#7a3a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <!-- ═══ CHAPÉU DE OBRA BRANCO ═══ -->
+    <!-- Aba do chapéu -->
+    <ellipse cx="50" cy="25" rx="27" ry="5" fill="white"/>
+    <ellipse cx="50" cy="25" rx="27" ry="5" fill="none" stroke="#ccc" stroke-width="1"/>
+    <!-- Copa do capacete -->
+    <path d="M26 25 Q26 8 50 6 Q74 8 74 25 Z" fill="white"/>
+    <path d="M26 25 Q26 8 50 6 Q74 8 74 25 Z" fill="none" stroke="#ccc" stroke-width="1"/>
+    <!-- Faixa laranja no capacete -->
+    <path d="M29 22 Q50 18 71 22" stroke="#F26522" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <!-- Botão do topo do capacete -->
+    <ellipse cx="50" cy="7" rx="5" ry="3" fill="#e0e0e0"/>
+  </svg>`;
+}
+
+function brickSVG(size){
+  // Tijolo que fica pelo caminho (menor, um pouco inclinado)
+  const s = size || 32;
+  const angle = -8 + Math.random()*16;
+  return `<svg width="${s}" height="${Math.round(s*0.55)}" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${angle}deg)">
+    <rect x="0" y="0" width="32" height="18" rx="2" fill="#C1440E"/>
+    <rect x="0" y="0" width="32" height="8" rx="2" fill="#D4500F"/>
+    <line x1="16" y1="0" x2="16" y2="18" stroke="#A0380C" stroke-width="1.2"/>
+    <line x1="0" y1="9" x2="32" y2="9" stroke="#A0380C" stroke-width="0.8"/>
+  </svg>`;
+}
+
+// Controla posições de tijolos deixados (evita sobreposição)
+let lastBrickPos = {x:-9999, y:-9999};
+const BRICK_MIN_DIST = 55;
+
+function dropBrick(stage, x, y){
+  const dx = x - lastBrickPos.x, dy = y - lastBrickPos.y;
+  if(Math.sqrt(dx*dx+dy*dy) < BRICK_MIN_DIST) return;
+  lastBrickPos = {x, y};
+
+  const b = document.createElement('div');
+  b.className = 'dropped-brick';
+  const sz = 24 + Math.random()*16;
+  b.style.left = (x - sz/2)+'px';
+  b.style.top  = (y - sz*0.3)+'px';
+  b.innerHTML  = brickSVG(sz);
+  b.style.animationDelay    = (Math.random()*0.06)+'s';
+  b.style.animationDuration = (0.7 + Math.random()*0.3)+'s';
+  stage.appendChild(b);
+  setTimeout(()=>b.remove(), 1200);
+}
+
+// ── Curvas de animação ──
+function easeOut(t)    { return 1-Math.pow(1-t,3); }
+function easeInOut(t)  { return t<0.5?2*t*t:-1+(4-2*t)*t; }
+function easeIn(t)     { return t*t*t; }
+
+let workerActive = false;
+const workerFired = new Set();
+
+function animSeg(wrap, stage, x0,y0, x1,y1, dur, easeFn, onDone){
+  const t0 = performance.now();
+  function step(now){
+    const p = Math.min((now-t0)/dur, 1);
+    const e = easeFn(p);
+    const cx = x0+(x1-x0)*e;
+    const cy = y0+(y1-y0)*e;
+    wrap.style.left = cx+'px';
+    wrap.style.top  = cy+'px';
+    // Larga tijolo pela posição atual
+    const r = wrap.getBoundingClientRect();
+    if(r.width > 0){
+      dropBrick(stage, r.left + r.width*0.5, r.top + r.height*0.82);
+    }
+    if(p<1){ requestAnimationFrame(step); }
+    else { if(onDone) onDone(x1,y1); }
+  }
+  requestAnimationFrame(step);
+}
+
+function fireWorker(stolenText, targetEl){
+  if(workerActive) return;
+  workerActive = true;
+  lastBrickPos = {x:-9999, y:-9999};
+
+  const stage = document.getElementById('worker-stage');
+  const W = window.innerWidth, H = window.innerHeight;
+
+  // Posição-alvo: o countdown
+  let tx = W/2-50, ty = H/2-70;
+  if(targetEl){
+    const r = targetEl.getBoundingClientRect();
+    tx = Math.max(0, Math.min(W-110, r.left+r.width/2-50));
+    ty = Math.max(0, Math.min(H-150, r.top+r.height/2-70));
+  }
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:absolute;left:-140px;top:'+Math.max(20,ty-10+Math.random()*30)+'px;pointer-events:none;';
+  wrap.className = 'worker-wrap';
+
+  const stolen = document.createElement('div');
+  stolen.className = 'worker-stolen';
+  stolen.textContent = stolenText;
+
+  const figure = document.createElement('div');
+  figure.innerHTML = workerSVG();
+
+  wrap.appendChild(stolen);
+  wrap.appendChild(figure);
+  stage.appendChild(wrap);
+
+  const startY = parseFloat(wrap.style.top);
+
+  // Mesma coreografia do robo original:
+  // Entra esq → 35%, sobe dir, desce esq, centro, vai ao countdown, pausa, sai dir
+  animSeg(wrap,stage, -140,startY, W*0.35,startY, 1800, easeOut, (x1,y1)=>{
+
+    animSeg(wrap,stage, x1,y1, W*0.72,Math.max(20,H*0.14), 1100, easeInOut, (x2,y2)=>{
+
+      animSeg(wrap,stage, x2,y2, Math.max(20,W*0.12),Math.min(H-160,H*0.70), 1100, easeInOut, (x3,y3)=>{
+
+        animSeg(wrap,stage, x3,y3, W*0.48,H*0.44, 700, easeInOut, (x4,y4)=>{
+
+          // Exibe o label "roubado" e vai direto ao countdown
+          stolen.style.opacity = '1';
+          animSeg(wrap,stage, x4,y4, tx,ty, 900, easeInOut, (xt,yt)=>{
+
+            setTimeout(()=>{
+              // Sai pela direita
+              animSeg(wrap,stage, xt,yt, W+200,yt, 900, easeIn, ()=>{
+                wrap.remove();
+                workerActive = false;
+                setTimeout(()=>location.reload(), 100);
+              });
+            }, 400);
+          });
+        });
+      });
+    });
+  });
+}
+
+// ── COUNTDOWN ──────────────────────────────────────────────────────────────────
+const pad = n => String(n).padStart(2,'0');
+
+function fmtCd(ms){
+  if(ms<=0) return null;
+  const s=Math.floor(ms/1000), dd=Math.floor(s/86400),
+        hh=Math.floor((s%86400)/3600), mm=Math.floor((s%3600)/60), ss=s%60;
+  if(dd>0)  return {text:`${dd}d ${pad(hh)}h`,            cls:'far'};
+  if(hh>=2) return {text:`${hh}h ${pad(mm)}m`,            cls:'far'};
+  if(hh>=1) return {text:`${hh}h ${pad(mm)}m ${pad(ss)}s`,cls:'soon'};
+  if(mm>0)  return {text:`${mm}m ${pad(ss)}s`,             cls:'soon'};
+  return      {text:`${ss}s`,                              cls:'urgent'};
+}
+
+function tick(){
+  const now = Date.now();
+  const wallSec = Math.floor(now / 1000) % 60;
+
+  // Jogo primário = próximo a começar
+  let primaryGame = null;
+  for(const g of games){
+    if(kickoff(g).getTime()-now > 0){ primaryGame=g; break; }
+  }
+
+  games.forEach(g=>{
+    const nEl=document.getElementById('cdnum-'+g.id);
+    const lEl=document.getElementById('cdlbl-'+g.id);
+    const cEl=document.getElementById('card-'+g.id);
+    if(!nEl) return;
+
+    const k=kickoff(g).getTime(), toStart=k-now;
+
+    if(toStart>0){
+      const f=fmtCd(toStart);
+      nEl.textContent=f.text;
+      nEl.className='cd-num '+f.cls;
+      lEl.textContent='para o início';
+      cEl.classList.remove('live');
+
+      // Mascote dispara no :52 de cada minuto, para o jogo primário
+      if(primaryGame && g.id===primaryGame.id && wallSec===52 && !workerActive){
+        const minuteKey = g.id + '_' + Math.floor(now / 60000);
+        if(!workerFired.has(minuteKey)){
+          workerFired.add(minuteKey);
+          fireWorker(f.text, nEl);
+        }
+      }
+    } else {
+      const elapsed=now-k;
+      if(elapsed<GAME_DUR){
+        nEl.textContent='AO VIVO'; nEl.className='cd-num urgent';
+        lEl.textContent='em andamento'; cEl.classList.add('live');
+      } else {
+        nEl.textContent='Encerrado'; nEl.className='cd-num done';
+        lEl.textContent=''; cEl.classList.remove('live');
+      }
+    }
+  });
+}
+
+tick();
+setInterval(tick,1000);
+
+function switchTab(date){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.date===date));
+  document.querySelectorAll('.day-section').forEach(s=>s.classList.toggle('active',s.id==='section-'+date));
+  const b=document.querySelector(`.tab-btn[data-date="${date}"]`);
+  if(b) b.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+}
+
+buildTicker();
+initNotifications();
+</script>
+</body>
+</html>
