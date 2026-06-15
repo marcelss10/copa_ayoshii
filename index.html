@@ -23,7 +23,6 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; padding-bottom: 56px; }
 
-  /* ── FAIXA BRASIL no topo ── */
   .brazil-stripe {
     height: 5px;
     background: linear-gradient(90deg, var(--verde-br) 0%, var(--verde-br) 40%, var(--amarelo-br) 40%, var(--amarelo-br) 60%, var(--azul2) 60%, var(--azul2) 100%);
@@ -509,9 +508,12 @@ const gameLinks = {
   'Bélgica vs Egito':                'https://www.youtube.com/watch?v=aclBHrhLQr4',
   'França vs Senegal':               'https://www.youtube.com/watch?v=m1vplAfSs_A',
   'Portugal vs RD Congo':            'https://www.youtube.com/watch?v=HpzKFDctbNw',
+  'Argentina vs Argélia':            'https://www.youtube.com/watch?v=RhpNoBWVQGA',
 };
 const gameKey = g => `${g.t1} vs ${g.t2}`;
 
+// NOTA: Brasil vs Haiti horário oficial 21h30 (Filadélfia)
+// Argentina vs Argélia: 22h (Kansas City) - corrigido
 const games = [
   {date:'2026-06-11',h:16,min:0,label:'16h',t1:'México',t2:'África do Sul',city:'Cidade do México',group:'A',round:1},
   {date:'2026-06-11',h:23,min:0,label:'23h',t1:'Coreia do Sul',t2:'República Tcheca',city:'Guadalajara',group:'A',round:1},
@@ -529,9 +531,9 @@ const games = [
   {date:'2026-06-15',h:16,min:0,label:'16h',t1:'Bélgica',t2:'Egito',city:'Seattle',group:'G',round:1},
   {date:'2026-06-15',h:19,min:0,label:'19h',t1:'Arábia Saudita',t2:'Uruguai',city:'Miami',group:'H',round:1},
   {date:'2026-06-15',h:22,min:0,label:'22h',t1:'Irã',t2:'Nova Zelândia',city:'Los Angeles',group:'G',round:1},
-  {date:'2026-06-16',h:14,min:0,label:'14h',t1:'Argentina',t2:'Argélia',city:'Kansas City',group:'J',round:1},
-  {date:'2026-06-16',h:16,min:0,label:'16h',t1:'França',t2:'Senegal',city:'Nova York/NJ',group:'I',round:1},
+  {date:'2026-06-16',h:14,min:0,label:'14h',t1:'França',t2:'Senegal',city:'Nova York/NJ',group:'I',round:1},
   {date:'2026-06-16',h:19,min:0,label:'19h',t1:'Iraque',t2:'Noruega',city:'Boston',group:'I',round:1},
+  {date:'2026-06-16',h:22,min:0,label:'22h',t1:'Argentina',t2:'Argélia',city:'Kansas City',group:'J',round:1},
   {date:'2026-06-17',h:1,min:0,label:'01h',t1:'Áustria',t2:'Jordânia',city:'San Francisco',group:'J',round:1},
   {date:'2026-06-17',h:14,min:0,label:'14h',t1:'Portugal',t2:'RD Congo',city:'Houston',group:'K',round:1},
   {date:'2026-06-17',h:17,min:0,label:'17h',t1:'Inglaterra',t2:'Croácia',city:'Dallas',group:'L',round:1},
@@ -544,7 +546,7 @@ const games = [
   {date:'2026-06-19',h:1,min:0,label:'01h',t1:'Turquia',t2:'Paraguai',city:'San Francisco',group:'D',round:2},
   {date:'2026-06-19',h:16,min:0,label:'16h',t1:'Estados Unidos',t2:'Austrália',city:'Seattle',group:'D',round:2},
   {date:'2026-06-19',h:19,min:0,label:'19h',t1:'Escócia',t2:'Marrocos',city:'Boston',group:'C',round:2},
-  {date:'2026-06-19',h:22,min:0,label:'22h',t1:'Brasil',t2:'Haiti',city:'Filadélfia',group:'C',round:2},
+  {date:'2026-06-19',h:21,min:30,label:'21:30h',t1:'Brasil',t2:'Haiti',city:'Filadélfia',group:'C',round:2},
   {date:'2026-06-20',h:14,min:0,label:'14h',t1:'Holanda',t2:'Suécia',city:'Houston',group:'F',round:2},
   {date:'2026-06-20',h:17,min:0,label:'17h',t1:'Alemanha',t2:'Costa do Marfim',city:'Toronto',group:'E',round:2},
   {date:'2026-06-20',h:21,min:0,label:'21h',t1:'Equador',t2:'Curaçao',city:'Kansas City',group:'E',round:2},
@@ -600,7 +602,7 @@ function teamHtml(name, isBr){
   return `<span class="team${isBr?' brasil':''}"><img class="flag" src="${flagUrl(code)}" alt="${name}" loading="lazy" onerror="this.style.display='none'">${name}</span>`;
 }
 
-// ── RESULTADOS ──────────────────────────────────────────────────────────────
+// ── RESULTADOS (atualizados até 14/jun/2026) ─────────────────────────────────
 const resultados = {
   'México vs África do Sul':          '2-0',
   'Coreia do Sul vs República Tcheca':'2-1',
@@ -651,15 +653,20 @@ function buildTicker(){
   innerEl.style.animationDuration = Math.max(40, totalPx/65)+'s';
 }
 
-// ── ABERTURA AUTOMÁTICA ──────────────────────────────────────────────────────
+// ── ABERTURA AUTOMÁTICA — 30 minutos antes de CADA jogo com link ─────────────
+// A janela abre 30min antes E a contagem mostra o tempo até o kickoff
+// (o countdown sempre conta até o horário real do jogo)
+const PRE_OPEN_MS = 30 * 60 * 1000; // 30 minutos antes
+
 const firedPreOpen = new Set();
 function schedulePreOpen(){
   const now = Date.now();
   games.forEach(g => {
     const link = gameLinks[gameKey(g)];
     if(!link) return;
-    const delay = kickoff(g).getTime()-30*60*1000-now;
-    if(delay<0||delay>7*24*3600*1000) return;
+    const openAt = kickoff(g).getTime() - PRE_OPEN_MS;
+    const delay = openAt - now;
+    if(delay < 0 || delay > 7*24*3600*1000) return;
     setTimeout(()=>{
       if(firedPreOpen.has(g.id)) return;
       firedPreOpen.add(g.id);
@@ -748,12 +755,9 @@ sorted.forEach(date=>{
 
 // ══════════════════════════════════════════════════════════════════
 //  MASCOTE — Pedreiro da A.Yoshii em SVG puro
-//  Chapéu branco de obra, camiseta A.YOSHII azul
-//  Carrega um tijolo e vai largando tijolos pelo caminho
 // ══════════════════════════════════════════════════════════════════
 
 function workerSVG(){
-  // Mascote Oficial A.YOSHII - Tamanho GRANDE (400x500)
   return `<svg width="400" height="500" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
     <image 
       href="mascote-ayoshii.png" 
@@ -766,7 +770,6 @@ function workerSVG(){
 }
 
 function brickSVG(size){
-  // Tijolo que fica pelo caminho (menor, um pouco inclinado)
   const s = size || 32;
   const angle = -8 + Math.random()*16;
   return `<svg width="${s}" height="${Math.round(s*0.55)}" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${angle}deg)">
@@ -777,7 +780,6 @@ function brickSVG(size){
   </svg>`;
 }
 
-// Controla posições de tijolos deixados (evita sobreposição)
 let lastBrickPos = {x:-9999, y:-9999};
 const BRICK_MIN_DIST = 55;
 
@@ -798,7 +800,6 @@ function dropBrick(stage, x, y){
   setTimeout(()=>b.remove(), 1200);
 }
 
-// ── Curvas de animação ──
 function easeOut(t)    { return 1-Math.pow(1-t,3); }
 function easeInOut(t)  { return t<0.5?2*t*t:-1+(4-2*t)*t; }
 function easeIn(t)     { return t*t*t; }
@@ -815,7 +816,6 @@ function animSeg(wrap, stage, x0,y0, x1,y1, dur, easeFn, onDone){
     const cy = y0+(y1-y0)*e;
     wrap.style.left = cx+'px';
     wrap.style.top  = cy+'px';
-    // Larga tijolo pela posição atual
     const r = wrap.getBoundingClientRect();
     if(r.width > 0){
       dropBrick(stage, r.left + r.width*0.5, r.top + r.height*0.82);
@@ -834,7 +834,6 @@ function fireWorker(stolenText, targetEl){
   const stage = document.getElementById('worker-stage');
   const W = window.innerWidth, H = window.innerHeight;
 
-  // Posição-alvo: o countdown
   let tx = W/2-50, ty = H/2-70;
   if(targetEl){
     const r = targetEl.getBoundingClientRect();
@@ -859,22 +858,13 @@ function fireWorker(stolenText, targetEl){
 
   const startY = parseFloat(wrap.style.top);
 
-  // Mesma coreografia do robo original:
-  // Entra esq → 35%, sobe dir, desce esq, centro, vai ao countdown, pausa, sai dir
   animSeg(wrap,stage, -140,startY, W*0.35,startY, 1800, easeOut, (x1,y1)=>{
-
     animSeg(wrap,stage, x1,y1, W*0.72,Math.max(20,H*0.14), 1100, easeInOut, (x2,y2)=>{
-
       animSeg(wrap,stage, x2,y2, Math.max(20,W*0.12),Math.min(H-160,H*0.70), 1100, easeInOut, (x3,y3)=>{
-
         animSeg(wrap,stage, x3,y3, W*0.48,H*0.44, 700, easeInOut, (x4,y4)=>{
-
-          // Exibe o label "roubado" e vai direto ao countdown
           stolen.style.opacity = '1';
           animSeg(wrap,stage, x4,y4, tx,ty, 900, easeInOut, (xt,yt)=>{
-
             setTimeout(()=>{
-              // Sai pela direita
               animSeg(wrap,stage, xt,yt, W+200,yt, 900, easeIn, ()=>{
                 wrap.remove();
                 workerActive = false;
@@ -889,6 +879,7 @@ function fireWorker(stolenText, targetEl){
 }
 
 // ── COUNTDOWN ──────────────────────────────────────────────────────────────────
+// A contagem começa 30 minutos antes do jogo
 const pad = n => String(n).padStart(2,'0');
 
 function fmtCd(ms){
@@ -906,7 +897,7 @@ function tick(){
   const now = Date.now();
   const wallSec = Math.floor(now / 1000) % 60;
 
-  // Jogo primário = próximo a começar
+  // Jogo primário = próximo jogo a começar (com ou sem link)
   let primaryGame = null;
   for(const g of games){
     if(kickoff(g).getTime()-now > 0){ primaryGame=g; break; }
@@ -921,10 +912,17 @@ function tick(){
     const k=kickoff(g).getTime(), toStart=k-now;
 
     if(toStart>0){
+      // Exibe contagem a partir de 30min antes; antes disso mostra tempo normal
       const f=fmtCd(toStart);
       nEl.textContent=f.text;
       nEl.className='cd-num '+f.cls;
-      lEl.textContent='para o início';
+
+      // Label muda quando está dentro dos 30min
+      if(toStart <= PRE_OPEN_MS){
+        lEl.textContent='abre em breve ⚽';
+      } else {
+        lEl.textContent='para o início';
+      }
       cEl.classList.remove('live');
 
       // Mascote dispara no :52 de cada minuto, para o jogo primário
